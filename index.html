@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ôn tập trắc nghiệm</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- GSAP for smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            animation: {
+              "fade-in": "fadeIn 0.6s ease-out forwards",
+              "slide-up": "slideUp 0.5s ease-out forwards",
+              "bounce-in": "bounceIn 0.6s ease-out forwards",
+              "pulse-glow": "pulseGlow 2s infinite",
+              shake: "shake 0.5s ease-in-out",
+              float: "float 6s ease-in-out infinite",
+              gradient: "gradient 8s ease infinite",
+            },
+            keyframes: {
+              fadeIn: {
+                "0%": { opacity: "0" },
+                "100%": { opacity: "1" },
+              },
+              slideUp: {
+                "0%": { opacity: "0", transform: "translateY(30px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              bounceIn: {
+                "0%": { opacity: "0", transform: "scale(0.3)" },
+                "50%": { transform: "scale(1.05)" },
+                "70%": { transform: "scale(0.9)" },
+                "100%": { opacity: "1", transform: "scale(1)" },
+              },
+              pulseGlow: {
+                "0%, 100%": { boxShadow: "0 0 20px rgba(139, 92, 246, 0.3)" },
+                "50%": { boxShadow: "0 0 40px rgba(139, 92, 246, 0.6)" },
+              },
+              shake: {
+                "0%, 100%": { transform: "translateX(0)" },
+                "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-5px)" },
+                "20%, 40%, 60%, 80%": { transform: "translateX(5px)" },
+              },
+              float: {
+                "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+                "50%": { transform: "translateY(-20px) rotate(5deg)" },
+              },
+              gradient: {
+                "0%, 100%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Enhanced glassmorphism and 3D card effects */
+      .glass-card {
+        background: rgba(30, 27, 75, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .glass-card:hover {
+        border-color: rgba(139, 92, 246, 0.4);
+        box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .question-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-style: preserve-3d;
+      }
+
+      .question-card:hover {
+        transform: translateY(-4px) rotateX(2deg);
+      }
+
+      /* Neon glow effects for options */
+      .option-label {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .option-label:hover {
+        transform: translateX(8px) scale(1.02);
+      }
+
+      .option-content {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .option-content::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .option-label:hover .option-content::before {
+        left: 100%;
+      }
+
+      input[type="radio"]:checked + .option-content {
+        background: linear-gradient(
+          135deg,
+          #6366f1 0%,
+          #8b5cf6 50%,
+          #a855f7 100%
+        );
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.5),
+          0 4px 15px rgba(139, 92, 246, 0.3);
+        transform: scale(1.02);
+      }
+
+      .correct-answer .option-content {
+        background: linear-gradient(
+          135deg,
+          #10b981 0%,
+          #059669 50%,
+          #047857 100%
+        ) !important;
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.5),
+          0 4px 15px rgba(16, 185, 129, 0.3) !important;
+      }
+
+      .wrong-answer .option-content {
+        background: linear-gradient(
+          135deg,
+          #ef4444 0%,
+          #dc2626 50%,
+          #b91c1c 100%
+        ) !important;
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.5),
+          0 4px 15px rgba(239, 68, 68, 0.3) !important;
+      }
+
+      /* Enhanced confetti particles */
+      .confetti {
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      /* Animated gradient background */
+      .bg-animated-gradient {
+        background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+      }
+
+      /* Glowing button effect */
+      .btn-glow {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-glow::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+          transparent,
+          rgba(139, 92, 246, 0.3),
+          transparent 30%
+        );
+        animation: rotate 4s linear infinite;
+      }
+
+      .btn-glow::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: inherit;
+      }
+
+      @keyframes rotate {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Progress bar shine effect */
+      .progress-shine {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-shine::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        animation: shine 2s infinite;
+      }
+
+      @keyframes shine {
+        100% {
+          left: 150%;
+        }
+      }
+
+      /* Floating orbs animation */
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.5;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      /* Score counter animation */
+      .score-counter {
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Mode button active state */
+      .mode-btn.active {
+        background: linear-gradient(
+          135deg,
+          #6366f1 0%,
+          #8b5cf6 50%,
+          #a855f7 100%
+        );
+        border-color: transparent;
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+      }
+
+      /* Quick review mode - show correct answer highlight */
+      .quick-review .correct-answer .option-content {
+        background: linear-gradient(
+          135deg,
+          #10b981 0%,
+          #059669 50%,
+          #047857 100%
+        ) !important;
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.5),
+          0 4px 15px rgba(16, 185, 129, 0.3) !important;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-animated-gradient font-sans overflow-x-hidden">
+    <!-- Enhanced background with animated orbs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="orb w-96 h-96 bg-purple-600/30 -top-48 -right-48"
+        style="animation-delay: 0s"
+      ></div>
+      <div
+        class="orb w-80 h-80 bg-indigo-600/30 -bottom-40 -left-40"
+        style="animation-delay: 2s"
+      ></div>
+      <div
+        class="orb w-64 h-64 bg-pink-600/20 top-1/2 left-1/4"
+        style="animation-delay: 4s"
+      ></div>
+      <div
+        class="orb w-48 h-48 bg-cyan-600/20 bottom-1/4 right-1/4"
+        style="animation-delay: 6s"
+      ></div>
+
+      <!-- Grid pattern overlay -->
+      <div
+        class="absolute inset-0 opacity-5"
+        style="
+          background-image: radial-gradient(
+            circle at 1px 1px,
+            white 1px,
+            transparent 0
+          );
+          background-size: 40px 40px;
+        "
+      ></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-8 max-w-3xl">
+      <!-- Enhanced Header with animated icon -->
+      <div class="text-center mb-10 animate-fade-in">
+        <div
+          class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl mb-6 shadow-2xl shadow-purple-500/40 animate-pulse-glow"
+        >
+          <i data-lucide="brain" class="w-10 h-10 text-white"></i>
+        </div>
+        <h1
+          class="text-5xl font-extrabold mb-3 bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent drop-shadow-lg"
+        >
+          Ôn tập trắc nghiệm
+        </h1>
+        <p
+          class="text-lg text-slate-400 flex items-center justify-center gap-2"
+        >
+          <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
+          Kiểm tra kiến thức của bạn
+          <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
+        </p>
+      </div>
+
+      <!-- Mode Selection Panel -->
+      <div
+        id="modePanel"
+        class="mb-8 animate-fade-in glass-card rounded-2xl p-6"
+        style="animation-delay: 0.1s"
+      >
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="layout-grid" class="w-5 h-5 text-purple-400"></i>
+          Chọn chế độ ôn tập
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button
+            onclick="startExam()"
+            class="mode-btn group flex flex-col items-center gap-2 p-4 bg-slate-800/50 border-2 border-slate-600/30 rounded-2xl hover:border-purple-500/50 transition-all duration-300"
+          >
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
+            >
+              <i data-lucide="file-text" class="w-6 h-6 text-white"></i>
+            </div>
+            <span class="text-white font-semibold text-sm">Chọn đề 40 câu</span>
+            <span class="text-slate-400 text-xs">Random từ ngân hàng</span>
+          </button>
+
+          <button
+            onclick="startQuickReview()"
+            class="mode-btn group flex flex-col items-center gap-2 p-4 bg-slate-800/50 border-2 border-slate-600/30 rounded-2xl hover:border-emerald-500/50 transition-all duration-300"
+          >
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
+            >
+              <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+            </div>
+            <span class="text-white font-semibold text-sm">Ôn nhanh</span>
+            <span class="text-slate-400 text-xs">Xem đáp án ngay</span>
+          </button>
+
+          <button
+            id="reviewWrongBtn"
+            onclick="reviewWrongAnswers()"
+            class="mode-btn group flex flex-col items-center gap-2 p-4 bg-slate-800/50 border-2 border-slate-600/30 rounded-2xl hover:border-red-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled
+          >
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
+            >
+              <i data-lucide="refresh-cw" class="w-6 h-6 text-white"></i>
+            </div>
+            <span class="text-white font-semibold text-sm">Ôn câu sai</span>
+            <span id="wrongCountBadge" class="text-slate-400 text-xs"
+              >Chưa có câu sai</span
+            >
+          </button>
+
+          <button
+            onclick="startAllQuestions()"
+            class="mode-btn group flex flex-col items-center gap-2 p-4 bg-slate-800/50 border-2 border-slate-600/30 rounded-2xl hover:border-amber-500/50 transition-all duration-300"
+          >
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
+            >
+              <i data-lucide="book-open" class="w-6 h-6 text-white"></i>
+            </div>
+            <span class="text-white font-semibold text-sm">Tất cả câu hỏi</span>
+            <span id="totalQuestionsCount" class="text-slate-400 text-xs"
+              >0 câu</span
+            >
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Mode Indicator -->
+      <div
+        id="currentModeIndicator"
+        class="hidden mb-6 animate-fade-in glass-card rounded-2xl p-4"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div
+              id="modeIcon"
+              class="w-10 h-10 rounded-xl flex items-center justify-center"
+            ></div>
+            <div>
+              <h3 id="modeName" class="text-white font-bold"></h3>
+              <p id="modeDescription" class="text-slate-400 text-sm"></p>
+            </div>
+          </div>
+          <button
+            onclick="backToMenu()"
+            class="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 text-white rounded-xl transition-colors"
+          >
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Quay lại</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Enhanced Progress Bar with stats -->
+      <div
+        id="progressContainer"
+        class="hidden mb-8 animate-fade-in glass-card rounded-2xl p-5"
+        style="animation-delay: 0.1s"
+      >
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-purple-400"></i>
+            <span class="text-sm font-medium text-slate-300">Tiến độ</span>
+          </div>
+          <span
+            id="progressText"
+            class="text-sm font-bold text-purple-300 bg-purple-500/20 px-3 py-1 rounded-full"
+          >
+            0/40 câu đã trả lời
+          </span>
+        </div>
+        <div
+          class="h-3 bg-slate-800/80 rounded-full overflow-hidden shadow-inner"
+        >
+          <div
+            id="progressBar"
+            class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-700 ease-out progress-shine"
+            style="width: 0%"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Quiz Form -->
+      <form id="quizForm" class="space-y-6"></form>
+
+      <!-- Enhanced Button Group -->
+      <div
+        id="buttonGroup"
+        class="hidden mt-10 flex flex-wrap justify-center gap-4 animate-fade-in"
+        style="animation-delay: 0.5s"
+      >
+        <button
+          id="submitBtn"
+          onclick="submitQuiz()"
+          class="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-lg rounded-2xl shadow-2xl shadow-purple-500/40 hover:shadow-purple-500/60 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
+        >
+          <span class="relative z-10 flex items-center gap-3">
+            <i
+              data-lucide="send"
+              class="w-6 h-6 group-hover:translate-x-1 transition-transform"
+            ></i>
+            <span>Nộp bài</span>
+          </span>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          ></div>
+        </button>
+      </div>
+
+      <!-- Enhanced Result Card -->
+      <div
+        id="resultCard"
+        class="hidden mt-10 glass-card rounded-3xl overflow-hidden"
+      >
+        <div class="p-8">
+          <div class="text-center">
+            <div
+              id="resultIcon"
+              class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6"
+            ></div>
+            <h2
+              id="resultTitle"
+              class="text-3xl font-extrabold text-white mb-3"
+            ></h2>
+            <p
+              id="resultText"
+              class="text-lg text-slate-400 mb-6 max-w-md mx-auto"
+            ></p>
+
+            <!-- Animated score display -->
+            <div
+              class="inline-flex flex-col items-center gap-4 p-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-2xl border border-slate-700/50"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30"
+                >
+                  <i data-lucide="trophy" class="w-6 h-6 text-white"></i>
+                </div>
+                <span
+                  id="scoreValue"
+                  class="text-3xl font-extrabold text-white score-counter"
+                ></span>
+              </div>
+              <div
+                id="scoreBar"
+                class="w-64 h-3 bg-slate-700 rounded-full overflow-hidden"
+              >
+                <div
+                  id="scoreBarFill"
+                  class="h-full rounded-full transition-all duration-1000 ease-out"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Retry Button with shuffle feature -->
+      <div
+        id="retryContainer"
+        class="hidden mt-8 flex flex-col sm:flex-row justify-center gap-4"
+      >
+        <button
+          onclick="restartQuiz()"
+          class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105"
+        >
+          <i
+            data-lucide="shuffle"
+            class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500"
+          ></i>
+          <span>Làm lại & Đảo câu hỏi</span>
+        </button>
+
+        <button
+          onclick="restartQuizSameOrder()"
+          class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-700/80 hover:bg-slate-600/80 text-white font-bold rounded-2xl border border-slate-600/50 transition-all duration-300 hover:scale-105"
+        >
+          <i
+            data-lucide="rotate-ccw"
+            class="w-5 h-5 group-hover:-rotate-180 transition-transform duration-500"
+          ></i>
+          <span>Làm lại</span>
+        </button>
+
+        <button
+          onclick="backToMenu()"
+          class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-purple-700/80 hover:bg-purple-600/80 text-white font-bold rounded-2xl border border-purple-600/50 transition-all duration-300 hover:scale-105"
+        >
+          <i
+            data-lucide="home"
+            class="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
+          ></i>
+          <span>Menu chính</span>
+        </button>
+      </div>
+
+      <!-- Stats footer -->
+      <div id="statsFooter" class="hidden mt-8 glass-card rounded-2xl p-5">
+        <div class="flex flex-wrap justify-center gap-6 text-center">
+          <div class="flex flex-col items-center">
+            <span class="text-2xl font-bold text-emerald-400" id="correctCount"
+              >0</span
+            >
+            <span class="text-sm text-slate-400">Đúng</span>
+          </div>
+          <div class="w-px bg-slate-700"></div>
+          <div class="flex flex-col items-center">
+            <span class="text-2xl font-bold text-red-400" id="wrongCount"
+              >0</span
+            >
+            <span class="text-sm text-slate-400">Sai</span>
+          </div>
+          <div class="w-px bg-slate-700"></div>
+          <div class="flex flex-col items-center">
+            <span class="text-2xl font-bold text-purple-400" id="percentScore"
+              >0%</span
+            >
+            <span class="text-sm text-slate-400">Tỉ lệ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Questions data - all question arrays
+      const originalQuestions11 = [
+        {
+          text: "Vấn đề cơ bản của triết học là gì?",
+          options: [
+            "Vấn đề mối quan hệ giữa vật chất và ý thức",
+            "Vấn đề mối quan hệ giữa quá khứ và hiện tại",
+            "Vấn đề mối quan hệ giữa không gian và thời gian",
+            "Vấn đề mối quan hệ giữa lý trí và tình cảm",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Chủ nghĩa duy vật là trường phái có quan niệm nào sau đây?",
+          options: [
+            "Ý thức có trước, sinh ra và quyết định vật chất",
+            "Vật chất và ý thức cùng song song xuất hiện và quyết định thế giới",
+            "Vật chất có trước, sinh ra và quyết định ý thức",
+            "Cảm giác, ý thức của con người quyết định thế giới",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Chủ nghĩa duy tâm khách quan là trường phái triết học có quan niệm nào sau đây?",
+          options: [
+            "Thế giới được sáng tạo ra bởi một lực lượng tinh thần siêu tự nhiên",
+            "Thế giới được tạo thành từ các cảm giác có sẵn trong con người",
+            "Thế giới được tạo nên bởi các yếu tố vật chất",
+            "Thế giới không do lực lượng nào tạo ra cả",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Mọi sự vật, hiện tượng chỉ là “phức hợp những cảm giác” của cá nhân là quan điểm của trường phái triết học nào?",
+          options: [
+            "Chủ nghĩa duy tâm chủ quan",
+            "Chủ nghĩa duy lý trí",
+            "Chủ nghĩa duy vật duy cảm",
+            "Cả ba đáp án trên",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Trong lịch sử, chủ nghĩa duy tâm có những hình thức cơ bản nào?",
+          options: [
+            "Chủ nghĩa thực chứng và chủ nghĩa thực dụng",
+            "Chủ nghĩa duy tâm duy linh thần bí và chủ nghĩa duy tâm thần học",
+            "Chủ nghĩa hoài nghi và thuyết bất khả tri",
+            "Chủ nghĩa duy tâm chủ quan và chủ nghĩa duy tâm khách quan",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Chủ nghĩa duy tâm là trường phái triết học có quan niệm nào sau đây?",
+          options: [
+            "Vật chất có trước, sinh ra và quyết định ý thức",
+            "Ý thức có trước, sinh ra và quyết định vật chất",
+            "Vật chất và ý thức cùng song song xuất hiện và quyết định thế giới",
+            "Cả 3 phương án đều đúng",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Thuyết khả tri luận có quan niệm nào sau đây?",
+          options: [
+            "Con người có thể nhận thức được bản chất của thế giới",
+            "Con người không thể nhận thức được bản chất của thế giới",
+            "Con người chỉ biết đến các hiện tượng bề ngoài của thế giới",
+            "Khả năng nhận thức của loài người là vô hạn",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Nguồn gốc ra đời của chủ nghĩa duy tâm là gì?",
+          options: [
+            "Tuyệt đối hóa vai trò của lao động trí óc và của giai cấp thống trị",
+            "Xem xét phiến diện, tuyệt đối hóa một mặt của nhận thức",
+            "Sự tuyệt đối hóa vai trò của ý thức",
+            "Do cả ba nguyên nhân",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Mặt thứ hai của vấn đề cơ bản của triết học là gì?",
+          options: [
+            "Giữa vật chất và ý thức cái nào có trước, cái nào quyết định",
+            "Con người có khả năng nhận thức thế giới hay không?",
+            "Vấn đề quan hệ giữa vật chất và ý thức",
+            "Vật chất có trước, ý thức có sau",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Hình thức cao nhất của chủ nghĩa duy vật là gì?",
+          options: [
+            "Chủ nghĩa duy vật tầm thường",
+            "Chủ nghĩa duy vật chất phác",
+            "Chủ nghĩa duy vật biện chứng",
+            "Chủ nghĩa duy vật siêu hình",
+          ],
+          correct: 2,
+        },
+      ];
+      const originalQuestions20 = [
+        {
+          text: "Tiền đề lý luận trực tiếp cho sự ra đời của triết học Mác là gì?",
+          options: [
+            "Triết học cổ điển Đức, Kinh tế chính trị tư sản cổ điển Anh, Chủ nghĩa xã hội không tưởng Pháp",
+            "Triết học Hy Lạp cổ đại, Kinh tế chính trị tư sản cổ điển Anh, Chủ nghĩa xã hội không tưởng Pháp",
+            "Triết học cổ điển Đức, Kinh tế chính trị tư sản cổ điển Anh, Chủ nghĩa xã hội khoa học",
+            "Triết học Hy Lạp cổ đại, Kinh tế chính trị tư sản cổ điển Anh, Chủ nghĩa xã hội khoa học",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Triết học Mác ra đời vào khoảng thời gian nào?",
+          options: [
+            "Khoảng những năm 40 của thế kỷ XVIII",
+            "Khoảng những năm 40 thế kỷ XIX",
+            "Khoảng cuối thế kỷ XVIII",
+            "Khoảng cuối thế kỷ XIX",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Tiền đề khoa học tự nhiên trực tiếp cho sự ra đời của triết học Mác là gì?",
+          options: [
+            "Định luật bảo toàn và chuyển hóa năng lượng, học thuyết tương đối, thuyết nhật tâm",
+            "Thuyết địa tâm, học thuyết tương đối, thuyết tế bào",
+            "Định luật bảo toàn và chuyển hóa năng lượng, học thuyết tương đối, học thuyết tế bào",
+            "Định luật bảo toàn và chuyển hóa năng lượng, học thuyết tiến hóa, học thuyết tế bào",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Những cống hiến của V.I. Lênin đối với triết học Mác là gì?",
+          options: [
+            "Bổ sung và hoàn chỉnh về mặt lý luận và thực tiễn các vấn đề của chủ nghĩa Mác",
+            "Các phương án đều đúng",
+            "Phê phán và chống lại các quan điểm sai lầm trong thời đại đế quốc chủ nghĩa",
+            "Hiện thực hóa lý luận chủ nghĩa Mác bằng thắng lợi của Cách mạng tháng Mười Nga",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Yếu tố nào được coi là nhân tố chính trị – xã hội quan trọng cho sự ra đời triết học Mác?",
+          options: [
+            "Học thuyết tế bào",
+            "Sự xuất hiện của giai cấp vô sản với tư cách là lực lượng chính trị – xã hội độc lập",
+            "Định luật bảo toàn và chuyển hóa năng lượng",
+            "Cuộc cách mạng công nghiệp lần thứ nhất",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Điền từ còn thiếu: “Triết học Mác – Lênin là thế giới quan và phương pháp luận khoa học, cách mạng của ...”",
+          options: [
+            "Giai cấp chủ nô và giai cấp địa chủ",
+            "Giai cấp địa chủ và giai cấp nông dân",
+            "Giai cấp công nhân và nhân dân lao động",
+            "Giai cấp thống trị và giai cấp bị trị",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Điền từ còn thiếu: “Triết học Mác nói riêng và chủ nghĩa Mác nói chung ra đời đáp ứng yêu cầu đấu tranh của ...”",
+          options: [
+            "Giai cấp chủ nô",
+            "Giai cấp thống trị",
+            "Giai cấp vô sản",
+            "Giai cấp nông dân",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Điền vào chỗ trống: “Hai nhà triết học tiêu biểu của triết học cổ điển Đức là ...”",
+          options: [
+            "Hium và Đêcac",
+            "Platon và Aritxtot",
+            "Hêghen và Phơbach",
+            "Xôcrat và Platon",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Đâu không phải là tiền đề khoa học tự nhiên trực tiếp cho sự ra đời của triết học Mác?",
+          options: [
+            "Thuyết tương đối rộng và hẹp",
+            "Định luật bảo toàn và chuyển hóa năng lượng",
+            "Thuyết tiến hóa",
+            "Thuyết tế bào",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Chủ nghĩa duy vật biện chứng ra đời vào khoảng thời gian nào?",
+          options: [
+            "Từ thế kỷ XV đến thế kỷ XVIII",
+            "Thời kỳ triết học cổ đại",
+            "Khi con người mới thoát thai từ động vật",
+            "Những năm 40 của thế kỷ XIX",
+          ],
+          correct: 3,
+        },
+      ];
+      const originalQuestions30 = [
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là hệ thống tín hiệu vật chất mang nội dung ý thức, là cái vỏ vật chất của tư duy”?",
+          options: ["Ngôn ngữ", "Lao động", "Bộ não", "Phản ánh"],
+          correct: 0,
+        },
+        {
+          text: "Phản ánh là thuộc tính như thế nào?",
+          options: [
+            "Tồn tại ở các sinh vật sống",
+            "Tồn tại ở mọi dạng vật chất",
+            "Chỉ có ở bộ não của các động vật",
+            "Chỉ có ở bộ não người",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Khí quan vật chất của ý thức là gì?",
+          options: [
+            "Các sinh vật sống",
+            "Bộ não con người",
+            "Chất vô cơ",
+            "Thế giới khách quan",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Nguồn gốc hàng đầu của ý thức xét trên phương diện xã hội là gì?",
+          options: [
+            "Quá trình lao động",
+            "Bộ não có cấu tạo phức tạp",
+            "Quá trình sống",
+            "Sự nhận thức",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “Bản chất của ý thức là sự phản ánh năng động, sáng tạo thế giới khách quan vào ....”?",
+          options: [
+            "các sinh vật sống",
+            "hệ thần kinh động vật",
+            "thế giới khách quan",
+            "bộ não con người",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng, nguồn gốc tự nhiên của ý thức gồm các yếu tố cơ bản là gì?",
+          options: [
+            "Lao động sản xuất và ngôn ngữ",
+            "Bộ óc con người và thế giới khách quan tác động vào bộ óc",
+            "Bộ óc con người và lao động sáng tạo của con người",
+            "Thế giới khách quan tác động và hệ thống ngôn ngữ phát triển",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Đâu không phải là quan điểm của chủ nghĩa duy vật biện chứng về bản chất của ý thức?",
+          options: [
+            "Ý thức là sự phản ánh y nguyên hiện thực khách quan vào bộ óc con người",
+            "Ý thức là hiện tượng mang bản chất lịch sử - xã hội",
+            "Ý thức là sự phản ánh năng động, sáng tạo hiện thực khách quan vào bộ óc con người",
+            "Ý thức là đặc tính riêng có của bộ não người",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Quan điểm nào tuyệt đối hoá vai trò của vật chất, phủ nhận tính độc lập tương đối của ý thức?",
+          options: [
+            "Chủ nghĩa duy vật biện chứng",
+            "Chủ nghĩa duy tâm khách quan",
+            "Chủ nghĩa duy tâm chủ quan",
+            "Chủ nghĩa duy vật siêu hình",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Lựa chọn câu đúng nhất theo quan điểm của chủ nghĩa duy vật biện chứng?",
+          options: [
+            "Thế giới thống nhất ở tính tinh thần của nó.",
+            "Thế giới thống nhất do ý niệm tuyệt đối.",
+            "Thế giới thống nhất ở tính vật chất của nó.",
+            "Thế giới thống nhất do ý muốn chủ quan của con người.",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Theo chủ nghĩa duy vật biện chứng, quan điểm nào sau đây là sai?",
+          options: [
+            "Ý thức có tính sáng tạo.",
+            "Ý thức cũng chỉ là một dạng vật chất thông thường.",
+            "Ý thức mang bản chất xã hội.",
+            "Ý thức là hình ảnh chủ quan của thế giới khách quan.",
+          ],
+          correct: 1,
+        },
+      ];
+      const originalQuestions40 = [
+        {
+          text: "Quan niệm vật chất là lửa là quan niệm của nhà triết học nào thời cổ đại?",
+          options: ["Heraclit", "Platon", "Aritxtot", "Xocrat"],
+          correct: 0,
+        },
+        {
+          text: "“Vật chất là nguyên tử” là quan niệm của nhà triết học Hy Lạp cổ đại nào?",
+          options: ["Platon", "Democrit", "Aritxtot", "Heraclit"],
+          correct: 1,
+        },
+        {
+          text: "Vận động là phương thức tồn tại của vật chất, là thuộc tính cố hữu của vật chất là quan điểm của trường phái triết học nào?",
+          options: [
+            "Chủ nghĩa duy vật biện chứng",
+            "Chủ nghĩa duy tâm",
+            "Chủ nghĩa duy vật thời cổ đại",
+            "Chủ nghĩa duy vật siêu hình",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng các mệnh đề nào dưới đây là không đúng?",
+          options: [
+            "Sự vật muốn vận động thì cần phải có một lực bên ngoài tác động vào nó",
+            "Vận động của vật chất biểu hiện ở nhiều trình độ khác nhau, rất đa dạng, phong phú, tùy vào kết cấu vật chất",
+            "Vận động của vật chất là vận động tự thân",
+            "Vận động và vật chất luôn gắn liền với nhau",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hình thức vận động khái quát sự biến đổi của các cơ thể sống là gì?",
+          options: [
+            "Vận động vật lý",
+            "Vận động hóa học",
+            "Vận động sinh học",
+            "Vận động xã hội",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Trong các quan điểm sau, đâu là quan điểm của chủ nghĩa duy vật biện chứng?",
+          options: [
+            "Có những dạng vật chất không có vận động",
+            "Vận động chỉ là sự tăng giảm về số lượng",
+            "Vận động là tuyệt đối, đứng im là tương đối",
+            "Vận động tồn tại tách rời vật chất",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Hình thức vận động khái quát sự biến đổi của các hình thái kinh tế xã hội và các quan hệ xã hội là gì?",
+          options: [
+            "Vận động vật lý",
+            "Vận động hóa học",
+            "Vận động sinh học",
+            "Vận động xã hội",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là hình thức tồn tại của vật chất vận động xét về mặt độ dài diễn biến, sự kế tiếp của các quá trình”?",
+          options: ["Thời gian", "Không gian", "Vận động", "Ngôn ngữ"],
+          correct: 0,
+        },
+        {
+          text: "Điền từ thích hợp vào chỗ trống: “... là hình thức đặc biệt của vận động, vận động trong cân bằng”",
+          options: ["Tiến hóa", "Đứng im", "Phát triển", "Thoái hóa"],
+          correct: 1,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là hình thức tồn tại của vật chất xét về mặt quảng tính, chỉ sự tồn tại xét về vị trí, kết cấu, quy mô và sự cùng tồn tại, trật tự giữa các sự vật, hiện tượng.”?",
+          options: ["Thời gian", "Không gian", "Vận động", "Đứng im"],
+          correct: 1,
+        },
+      ];
+      const originalQuestions60 = [
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là hệ thống tín hiệu vật chất mang nội dung ý thức, là cái vỏ vật chất của tư duy”?",
+          options: ["Ngôn ngữ", "Lao động", "Bộ não", "Phản ánh"],
+          correct: 0,
+        },
+        {
+          text: "Phản ánh là thuộc tính như thế nào?",
+          options: [
+            "Tồn tại ở các sinh vật sống",
+            "Tồn tại ở mọi dạng vật chất",
+            "Chỉ có ở bộ não của các động vật",
+            "Chỉ có ở bộ não người",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Khí quan vật chất của ý thức là gì?",
+          options: [
+            "Các sinh vật sống",
+            "Bộ não con người",
+            "Chất vô cơ",
+            "Thế giới khách quan",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Nguồn gốc hàng đầu của ý thức xét trên phương diện xã hội là gì?",
+          options: [
+            "Quá trình lao động",
+            "Bộ não có cấu tạo phức tạp",
+            "Quá trình sống",
+            "Sự nhận thức",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “Bản chất của ý thức là sự phản ánh năng động, sáng tạo thế giới khách quan vào ....”?",
+          options: [
+            "các sinh vật sống",
+            "hệ thần kinh động vật",
+            "thế giới khách quan",
+            "bộ não con người",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng, nguồn gốc tự nhiên của ý thức gồm các yếu tố cơ bản là gì?",
+          options: [
+            "Lao động sản xuất và ngôn ngữ",
+            "Bộ óc con người và thế giới khách quan tác động vào bộ óc",
+            "Bộ óc con người và lao động sáng tạo của con người",
+            "Thế giới khách quan tác động và hệ thống ngôn ngữ phát triển",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Đâu không phải là quan điểm của chủ nghĩa duy vật biện chứng về bản chất của ý thức?",
+          options: [
+            "Ý thức là sự phản ánh y nguyên hiện thực khách quan vào bộ óc con người",
+            "Ý thức là hiện tượng mang bản chất lịch sử - xã hội",
+            "Ý thức là sự phản ánh năng động, sáng tạo hiện thực khách quan vào bộ óc con người",
+            "Ý thức là đặc tính riêng có của bộ não người",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Quan điểm nào tuyệt đối hoá vai trò của vật chất, phủ nhận tính độc lập tương đối của ý thức?",
+          options: [
+            "Chủ nghĩa duy vật biện chứng",
+            "Chủ nghĩa duy tâm khách quan",
+            "Chủ nghĩa duy tâm chủ quan",
+            "Chủ nghĩa duy vật siêu hình",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Lựa chọn câu đúng nhất theo quan điểm của chủ nghĩa duy vật biện chứng?",
+          options: [
+            "Thế giới thống nhất ở tính tinh thần của nó.",
+            "Thế giới thống nhất do ý niệm tuyệt đối.",
+            "Thế giới thống nhất ở tính vật chất của nó.",
+            "Thế giới thống nhất do ý muốn chủ quan của con người.",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Theo chủ nghĩa duy vật biện chứng, quan điểm nào sau đây là sai?",
+          options: [
+            "Ý thức có tính sáng tạo.",
+            "Ý thức cũng chỉ là một dạng vật chất thông thường.",
+            "Ý thức mang bản chất xã hội.",
+            "Ý thức là hình ảnh chủ quan của thế giới khách quan.",
+          ],
+          correct: 1,
+        },
+      ];
+      const originalQuestions70 = [
+        {
+          text: "Phép biện chứng có mấy hình thức cơ bản?",
+          options: [
+            "Một hình thức",
+            "Hai hình thức",
+            "Ba hình thức",
+            "Bốn hình thức",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Cơ sở lý luận cơ bản nhất của quan điểm toàn diện là gì?",
+          options: [
+            "Nguyên lý về mối liên hệ phổ biến",
+            "Nguyên lý về sự phát triển",
+            "Cặp phạm trù nguyên nhân - kết quả",
+            "Quy luật phủ định của phủ định",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Theo quan điểm triết học Mác – Lênin, khẳng định nào sau đây sai?",
+          options: [
+            "Con người không thể tách khỏi các mối quan hệ với tự nhiên.",
+            "Giữa các loài luôn có khâu trung gian kết nối chúng với nhau.",
+            "Thế giới là một chỉnh thể trong sự liên hệ, ràng buộc lẫn nhau.",
+            "Thế giới tinh thần và thế giới vật chất tồn tại tách biệt.",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Phát triển có tính chất gì?",
+          options: [
+            "Khách quan, phổ biến, đa dạng, kế thừa",
+            "Khách quan và bất biến, đa dạng, độc lập",
+            "Tính biệt lập, đa dạng, chủ quan",
+            "Chủ quan, phổ biến, đa dạng phong phú",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Mối liên hệ nhân – quả có những tính chất gì?",
+          options: [
+            "Tính chủ quan, tính phổ biến, tính tất yếu",
+            "Tính khách quan, tính trừu tượng, tính cụ thể",
+            "Tính chủ quan, tính phổ biến, tính cụ thể",
+            "Tính khách quan, tính phổ biến và tính tất yếu",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Nguyên lý về mối liên hệ phổ biến khẳng định điều gì?",
+          options: [
+            "Các sự vật, hiện tượng tồn tại biệt lập, tách rời nhau",
+            "Mọi sự vật, hiện tượng trong thế giới đều có mối liên hệ qua lại, ràng buộc và tác động lẫn nhau",
+            "Chỉ có sự vật tự nhiên mới có liên hệ, còn xã hội thì không",
+            "Liên hệ xã hội quan trọng hơn liên hệ tự nhiên",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là một phạm trù triết học dùng để chỉ sự quy định, ràng buộc, sự tác động qua lại, sự chuyển hóa lẫn nhau giữa các mặt của một sự vật, hiện tượng hoặc giữa các sự vật, hiện tượng với nhau.”?",
+          options: ["Sự phát triển", "Bản chất", "Mối liên hệ", "Hiện tượng"],
+          correct: 2,
+        },
+        {
+          text: "Nguyên lý về sự phát triển khẳng định điều gì?",
+          options: [
+            "Sự phát triển là vòng tròn lặp đi lặp lại, không có tính tiến bộ",
+            "Các sự vật, hiện tượng luôn đứng im, bất biến",
+            "Sự phát triển chỉ là sự tăng trưởng đơn thuần về lượng",
+            "Sự phát triển là quá trình vận động đi lên từ thấp đến cao, từ đơn giản đến phức tạp, có tính kế thừa",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Ý nghĩa phương pháp luận của nguyên lý về sự phát triển là gì?",
+          options: [
+            "Coi sự phát triển là ngẫu nhiên, không có quy luật",
+            "Chỉ phân tích sự vật ở hiện trạng hiện nay",
+            "Phải xem xét sự vật trong quá trình vận động, biến đổi, phát triển, chú ý đến xu hướng tiến lên",
+            "Phải nhìn nhận sự vật trong trạng thái tĩnh tại, bất biến",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là quá trình vận động tiến lên từ thấp đến cao, từ kém hoàn thiện đến hoàn thiện hơn, từ chất cũ đến chất mới ở trình độ cao hơn.”?",
+          options: ["Phát triển", "Cách mạng", "Di chuyển", "Tiến hóa"],
+          correct: 0,
+        },
+      ];
+      const originalQuestions1 = [
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là những yếu tố giúp nguyên nhân sinh ra kết quả, nhưng bản thân điều kiện không sinh ra kết quả, là những sự vật, hiện tượng gắn liền với nguyên nhân, liên hệ với nguyên nhân trong cùng một không gian, thời gian, tác động vào nguyên nhân làm cho nguyên nhân phát sinh tác dụng.”?",
+          options: ["Điều kiện", "Kết quả", "Nguyên cớ", "Nguyên nhân"],
+          correct: 0,
+        },
+        {
+          text: "Hãy điền vào chỗ trống: “Theo quan điểm của chủ nghĩa duy vật biện chứng, nguyên nhân…”?",
+          options: [
+            "không có mối liên hệ đến kết quả",
+            "có sau kết quả, đôi khi có trước kết quả",
+            "không ảnh hưởng đến kết quả",
+            "sản sinh ra kết quả, có trước kết quả",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là phạm trù triết học chỉ những biến đổi xuất hiện do sự tương tác giữa các yếu tố mang tính nguyên nhân gây nên.”?",
+          options: ["Nguyên nhân", "Kết quả", "Phát triển", "Vận động"],
+          correct: 1,
+        },
+        {
+          text: "Hãy điền vào chỗ trống: “Theo quan điểm của chủ nghĩa duy vật biện chứng, sự phù hợp giữa nội dung và hình thức bao giờ cũng là sự phù hợp …”?",
+          options: ["bất biến", "tạm thời", "vĩnh viễn", "tuyệt đối"],
+          correct: 1,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng, nhận định nào sau đây là sai?",
+          options: [
+            "Nội dung là phạm trù chỉ tất cả các mặt, yếu tố, quá trình tạo nên sự vật.",
+            "Hình thức quyết định nội dung.",
+            "Hình thức chỉ phương thức tồn tại, biểu hiện và phát triển của sự vật, hiện tượng.",
+            "Nội dung quy định hình thức.",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Hãy chọn cụm từ thích hợp điền vào chỗ trống của câu sau để được định nghĩa khái niệm cái riêng: “Cái riêng là phạm trù triết học dùng để chỉ...”?",
+          options: [
+            "một sự vật, một quá trình riêng lẻ nhất định.",
+            "một đặc điểm chỉ có ở một sự vật mà không lặp lại ở sự vật khác",
+            "một nét đặc thù của một số các sự vật, hiện tượng.",
+            "một sự vật duy nhất không lặp lại ở sự vật khác",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là phạm trù triết học dùng để chỉ các mặt, các đặc điểm chỉ vốn có ở một sự vật, hiện tượng nào đó mà không lặp lại ở sự vật, hiện tượng nào khác”?",
+          options: ["Cái đơn nhất", "Cái chung", "Cái riêng", "Cái bản chất"],
+          correct: 0,
+        },
+        {
+          text: "Điền từ thích hợp vào chỗ: “Kết quả là …(1)... xuất hiện do …(2)... lẫn nhau giữa các mặt trong một sự vật hoặc giữa các sự vật với nhau gây ra”",
+          options: [
+            "(1) những sự vận động, (2) những thay đổi",
+            "(1) những sự tác động, (2) những biến đổi",
+            "(1) những biến đổi, (2) sự tác động",
+            "(1) những mối liên hệ, (2) sự kết hợp",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng nhận định nào sau đây là đúng?",
+          options: [
+            "Cái xuất hiện trước đều là nguyên nhân của cái xuất hiện sau.",
+            "Nguyên nhân luôn luôn xuất hiện trước kết quả.",
+            "Mọi sự kế tiếp nhau về mặt thời gian đều là quan hệ nhân quả.",
+            "Nguyên nhân và kết quả luôn cùng xuất hiện.",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Hãy điền cụm từ thích hợp vào chỗ trống của câu sau để được định nghĩa phạm trù tất nhiên: “Tất nhiên là cái do ...(1)... của kết cấu vật chất quyết định và trong những điều kiện nhất định nó ...(2)... chứ không thể khác được”?",
+          options: [
+            "(1) những nguyên nhân bên trong, (2) phải xảy ra như thế",
+            "(1) những nguyên nhân bên ngoài, (2) có thể xảy ra như thế",
+            "(1) những nguyên nhân chủ yếu bên ngoài, (2) có thể xảy ra như thế",
+            "(1) những nguyên nhân thứ yếu bên trong, (2) phải xảy ra như thế",
+          ],
+          correct: 0,
+        },
+      ];
+      const originalQuestions2 = [
+        {
+          text: "Chủ nghĩa duy tâm khách quan cho rằng nguồn gốc tri thức xuất phát từ đâu?",
+          options: [
+            "Từ ý niệm, tinh thần tuyệt đối",
+            "Từ thực tiễn xã hội",
+            "Từ cảm giác cá nhân",
+            "Từ hoạt động sản xuất vật chất",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Chủ nghĩa duy tâm chủ quan quan niệm nhận thức như thế nào?",
+          options: [
+            "Nhận thức là sự khái quát các quy luật khách quan",
+            "Nhận thức là sự phản ánh hiện thực khách quan",
+            "Nhận thức chỉ là cảm giác của cá nhân, không có khách thể độc lập",
+            "Nhận thức là sản phẩm của kinh nghiệm cá nhân và xã hội",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng, nhận thức là gì?",
+          options: [
+            "Sự ghi chép thụ động thế giới khách quan",
+            "Quá trình phản ánh sáng tạo hiện thực khách quan vào ý thức con người",
+            "Quá trình tạo ra tri thức hoàn toàn do bẩm sinh",
+            "Quá trình rèn luyện kỹ năng sống",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Đặc trưng cơ bản của nhận thức theo quan điểm duy vật biện chứng là gì?",
+          options: [
+            "Nhận thức là một quá trình hoàn toàn thụ động",
+            "Nhận thức mang tính chủ quan tuyệt đối dựa trên cảm giác",
+            "Nhận thức chỉ do trực giác đem lại",
+            "Nhận thức là sự phản ánh tích cực, sáng tạo hiện thực khách quan",
+          ],
+          correct: 3,
+        },
+        {
+          text: "“Nhận thức là sự phản ánh sáng tạo thế giới khách quan” – khía cạnh “sáng tạo” thể hiện điều gì?",
+          options: [
+            "Con người tự bịa ra thế giới theo ý muốn",
+            "Con người có khả năng tái hiện hiện thực một cách chủ động, khái quát, gián tiếp, dựa trên kinh nghiệm và mục đích",
+            "Con người phản ánh thế giới đúng nguyên bản, không sai khác",
+            "Con người phản ánh thế giới chỉ bằng giác quan",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Điểm hạn chế cơ bản của thuyết hoài nghi trong nhận thức là gì?",
+          options: [
+            "Không thừa nhận khả năng đạt đến chân lý khách quan",
+            "Tuyệt đối hóa thực tiễn",
+            "Phủ nhận sự tồn tại của vật chất",
+            "Đề cao nhận thức lý tính",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Luận điểm “Vật chất là cái có trước, ý thức là cái có sau” có ý nghĩa gì đối với lý luận nhận thức?",
+          options: [
+            "Phủ nhận vai trò của thực tiễn trong nhận thức",
+            "Khẳng định tính thứ nhất của vật chất và nguồn gốc khách quan của nhận thức",
+            "Khẳng định tính không thể nhận thức thế giới",
+            "Khẳng định nhận thức là bẩm sinh",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Tính vô tận của quá trình nhận thức thể hiện ở điểm nào?",
+          options: [
+            "Nhận thức do trực giác bẩm sinh mang lại",
+            "Nhận thức chỉ lặp lại kinh nghiệm cũ",
+            "Nhận thức có điểm dừng khi đạt đến chân lý cuối cùng",
+            "Nhận thức luôn phát triển, mở rộng và không có giới hạn cuối cùng",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Chủ nghĩa duy vật biện chứng khẳng định khả năng nhận thức thế giới của con người như thế nào?",
+          options: [
+            "Con người có thể nhận thức được thế giới và ngày càng sâu sắc, đầy đủ hơn",
+            "Con người chỉ có thể nhận thức được một phần rất nhỏ và không bao giờ tiến bộ",
+            "Con người không thể nhận thức được thế giới",
+            "Con người nhận thức thế giới hoàn toàn do thần linh ban cho",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Thừa nhận thế giới vật chất tồn tại khách quan độc lập với ý thức của con người là nguyên tắc cơ bản của trường phái nào?",
+          options: [
+            "Chủ nghĩa duy tâm khách quan",
+            "Chủ nghĩa duy vật trước Mác",
+            "Chủ nghĩa duy vật biện chứng",
+            "Chủ nghĩa duy tâm chủ quan",
+          ],
+          correct: 2,
+        },
+      ];
+      const originalQuestions3 = [
+        {
+          text: "Thực tiễn là toàn bộ những ........ có mục đích mang tính lịch sử xã hội của con người nhằm cải tạo tự nhiên và xã hội.",
+          options: [
+            "Hoạt động vật chất",
+            "Hoạt động tinh thần",
+            "Hoạt động sáng tạo",
+            "Hoạt động tư duy",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hoạt động nào sau đây không phải là hoạt động thực tiễn?",
+          options: [
+            "Hoạt động chính trị xã hội",
+            "Hoạt động sáng tạo ra các ý tưởng",
+            "Hoạt động sản xuất vật chất",
+            "Hoạt động thực nghiệm khoa học",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Ai là người đã đưa ra luận điểm nổi tiếng: “Từ trực quan sinh động đến tư duy trừu tượng, từ tư duy trừu tượng đến thực tiễn – đó là con đường biện chứng của sự nhận thức chân lý”?",
+          options: ["V.I. Lênin", "Mác", "Ph. Ăngghen", "Hêghen"],
+          correct: 0,
+        },
+        {
+          text: "Giai đoạn nhận thức diễn ra trên cơ sở sự tác động trực tiếp của các sự vật lên các giác quan của con người là giai đoạn nhận thức nào?",
+          options: [
+            "Nhận thức lý tính",
+            "Nhận thức khoa học",
+            "Nhận thức lý luận",
+            "Nhận thức cảm tính",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Theo quan điểm của chủ nghĩa duy vật biện chứng, luận điểm nào sau đây là sai?",
+          options: [
+            "Nhận thức cảm tính chưa phản ánh đầy đủ và sâu sắc sự vật.",
+            "Nhận thức cảm tính luôn phản ánh sai sự vật.",
+            "Nhận thức cảm tính gắn liền với thực tiễn.",
+            "Nhận thức cảm tính chưa phản ánh sâu sắc được bản chất của sự vật.",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Câu nào dưới đây thể hiện thực tiễn là động lực của nhận thức?",
+          options: [
+            "Cái nết đánh chết cái đẹp.",
+            "Con hơn cha là nhà có phú",
+            "Đi một ngày đàng học một sàng khôn.",
+            "Tốt gỗ hơn tốt nước sơn.",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Đâu không phải là vai trò của thực tiễn đối với nhận thức?",
+          options: [
+            "Thực tiễn là mục đích hướng tới của nhận thức",
+            "Thực tiễn là sản phẩm của nhận thức",
+            "Thực tiễn là cơ sở, động lực và mục đích của nhận thức",
+            "Thực tiễn là tiêu chuẩn để kiểm tra chân lý",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Trong quá trình nhận thức, “cảm giác” phản ánh đối tượng như thế nào?",
+          options: [
+            "Phản ánh trực tiếp, riêng lẻ, từng thuộc tính bề ngoài",
+            "Phản ánh gián tiếp, khái quát",
+            "Phản ánh bằng suy luận logic",
+            "Phản ánh bản chất, quy luật tất yếu",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hình thức nhận thức nào phản ánh bản chất, quy luật tất yếu của sự vật hiện tượng?",
+          options: [
+            "Niềm tin tôn giáo",
+            "Nhận thức cảm tính",
+            "Nhận thức kinh nghiệm",
+            "Nhận thức lý tính",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Đâu là khái niệm dùng để chỉ toàn bộ những hoạt động vật chất có mục đích, mang tính lịch sử - xã hội của con người nhằm cải tạo tự nhiên và xã hội?",
+          options: ["Vận động", "Hiện thực", "Thực tiễn", "Phát triển"],
+          correct: 2,
+        },
+      ];
+      const originalQuestions4 = [
+        {
+          text: "Hai mặt tạo thành phương thức sản xuất là:",
+          options: [
+            "Kinh tế và chính trị",
+            "Lực lượng sản xuất và quan hệ sản xuất",
+            "Tồn tại xã hội và ý thức xã hội",
+            "Cơ sở hạ tầng và kiến trúc thượng tầng",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Điền từ thích hợp vào chỗ trống: “... là cách thức con người tiến hành quá trình sản xuất vật chất ở những giai đoạn lịch sử nhất định của xã hội loài người”",
+          options: [
+            "Lực lượng sản xuất",
+            "Quan hệ sản xuất",
+            "Phương thức sản xuất",
+            "Tư liệu sản xuất",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Trong hai mặt của phương thức sản xuất mặt nào là nội dung của quá trình sản xuất?",
+          options: [
+            "Quan hệ sản xuất",
+            "Lực lượng sản xuất",
+            "Thường là lực lượng sản xuất",
+            "Thường là quan hệ sản xuất",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Trong hai mặt của phương thức sản xuất đâu là hình thức xã hội của quá trình sản xuất?",
+          options: [
+            "Quan hệ sản xuất",
+            "Lực lượng sản xuất",
+            "Thường là lực lượng sản xuất",
+            "Thường là quan hệ sản xuất",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Trong chủ nghĩa duy vật lịch sử, khái niệm phương thức sản xuất dùng để chỉ:",
+          options: [
+            "Quá trình sản xuất ra của cải vật chất trong một giai đoạn lịch sử nhất định",
+            "Cách thức sản xuất ra của cải vật chất trong một giai đoạn lịch sử nhất định",
+            "Cơ chế vận hành kinh tế trong các điều kiện cụ thể của xã hội",
+            "Quá trình sản xuất ra của cải vật chất với một cơ chế kinh tế nhất định",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Lực lượng sản xuất bao gồm những yếu tố nào sau đây?",
+          options: [
+            "Tư liệu sản xuất và các nguồn lực tự nhiên",
+            "Người lao động và trình độ lao động của họ",
+            "Người lao động và tư liệu sản xuất",
+            "Người lao động và công cụ lao động",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Khái niệm quan hệ sản xuất dùng để chỉ điều gì?",
+          options: [
+            "Mối quan hệ giữa con người và giới tự nhiên trong quá trình sản xuất",
+            "Mối quan hệ giữa con người và con người trong quá trình sản xuất",
+            "Mối quan hệ giữa con người với con người trong quá trình học tập",
+            "Mối quan hệ giữa con người và giới tự nhiên trong sáng tạo nghệ thuật",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Lực lượng sản xuất hàng đầu của toàn thể nhân loại là gì?",
+          options: [
+            "Tư liệu lao động",
+            "Đối tượng lao động",
+            "Người lao động",
+            "Phương tiện sản xuất",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Câu nói: “Cái cối xay quay bằng tay đưa lại xã hội có lãnh chúa, các cối xay chạy bằng hơi nước đưa lại xã hội có nhà tư bản công nghiệp” đề cập đến vai trò của yếu tố nào?",
+          options: [
+            "Người lao động",
+            "Công cụ lao động",
+            "Đối tượng lao động",
+            "Quan hệ lao động",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Yếu tố động nhất, cách mạng nhất trong lực lượng sản xuất, phản ánh trình độ chinh phục tự nhiên của con người:",
+          options: [
+            "Quan hệ sản xuất",
+            "Phương tiện phụ trợ",
+            "Tư liệu lao động",
+            "Công cụ lao động",
+          ],
+          correct: 3,
+        },
+      ];
+      const originalQuestions5 = [
+        {
+          text: "1. Cơ sở hạ tầng của xã hội là:",
+          options: [
+            "Tổng hợp các quan hệ sản xuất hợp thành cơ cấu kinh tế của xã hội",
+            "Đường sá, cầu tàu, bến cảng, đường điện, trượng học, bệnh viện, bưu điện…",
+            "Toàn bộ cơ sở vật chất - kỹ thuật của xã hội",
+            "Toàn bộ đời sống vật chất cấu thành cơ cấu kinh tế của xã hội",
+          ],
+          correct: 0,
+        },
+        {
+          text: "2. Theo quan điểm duy vật lịch sử, kiến trúc thượng tầng của xã hội bao gồm những gì?",
+          options: [
+            "Toàn bộ những quan điểm tư tưởng xã hội với những thiết chế văn hóa",
+            "Toàn bộ hệ thống kết cấu các hình thái ý thức xã hội cùng các thiết chế kinh tế",
+            "Toàn bộ hệ thống kết cấu hạ tầng xã hội cùng các thiết chế kinh tế của xã hội",
+            "Toàn bộ hệ thống kết cấu các hình thái ý thức xã hội cùng các thiết chế xã hội tương ứng",
+          ],
+          correct: 3,
+        },
+        {
+          text: "3. “Kiến trúc thượng tầng quyết định cơ sở hạ tầng”. Nhận định trên đúng hay sai?",
+          options: ["Đúng", "Sai"],
+          correct: 1,
+        },
+        {
+          text: "4. “Sự phát triển của các hình thái kinh tế xã hội vừa có sự tuần tự, vừa có phát triển bỏ qua”. Nhận định trên đúng hay sai?",
+          options: ["Đúng", "Sai"],
+          correct: 0,
+        },
+        {
+          text: "5. Sự tác động của kiến trúc thượng tầng đối với cơ sở hạ tầng là sự tác động như thế nào?",
+          options: [
+            "Luôn luôn diễn ra theo chiều hướng tiêu cực",
+            "Luôn luôn diễn ra theo chiều hướng tích cực",
+            "Có thể diễn ra theo chiều hướng tích cực hoặc tiêu cực",
+            "Tiêu cực là cơ bản còn đôi khi theo chiều hướng tích cực",
+          ],
+          correct: 2,
+        },
+        {
+          text: "6. Kiến trúc thượng tầng có mối quan hệ với cơ sở hạ tầng như thế nào?",
+          options: [
+            "Chịu sự quyết định hoàn toàn không có tác động trở lại cơ sở hạ tầng",
+            "Chịu sự quyết định và có tác động trở lại cơ sở hạ tầng",
+            "Không chịu sự tác động nào cơ sở hạ tầng",
+            "Quyết định cơ sở hạ tầng",
+          ],
+          correct: 1,
+        },
+        {
+          text: "7. Nội dung nào dưới đây không đúng khi nói về mối quan hệ biện chứng giữa cơ sở hạ tầng và kiến trúc thượng tầng của xã hội?",
+          options: [
+            "Kiến trúc thượng tầng quyết định cơ sở hạ tầng",
+            "Cơ sở hạ tầng quyết định kiến trúc thượng tầng",
+            "Kiến trúc thượng cùng chiều sẽ thúc đẩy cơ sở hạ tầng phát triển",
+            "Kiến trúc thượng ngược chiều sẽ kìm hãm sự phát triển của cơ sở hạ tầng",
+          ],
+          correct: 0,
+        },
+        {
+          text: "8. Quy luật về mối quan hệ biện chứng giữa cơ sở hạ tầng và kiến trúc thượng tầng là cơ sở khoa học cho việc nhận thức một cách đúng đắn mối quan hệ nào?",
+          options: [
+            "Kinh tế và lợi ích",
+            "Kinh tế và văn hóa",
+            "Kinh tế và pháp quyền",
+            "Kinh tế và chính trị",
+          ],
+          correct: 3,
+        },
+        {
+          text: "9. Đảng ta khẳng định: Lấy chủ nghĩa Mác – Lênin và tư tưởng Hồ Chí Minh làm kim chỉ nam cho mọi hành động của toàn Đảng, toàn dân. Khẳng định trên nói về yếu tố thuộc về điều gì?",
+          options: [
+            "Cơ sở hạ tầng",
+            "Đời sống kinh tế",
+            "Kiến trúc thượng tầng",
+            "Đời sống nghệ thuật",
+          ],
+          correct: 2,
+        },
+        {
+          text: "10. Các thành phần kinh tế thuộc yếu tố nào dưới đây?",
+          options: [
+            "Kiến trúc thượng tầng",
+            "Cơ sở hạ tầng",
+            "Tư liệu sản xuất",
+            "Đối tượng lao động",
+          ],
+          correct: 1,
+        },
+      ];
+      const originalQuestions6 = [
+        {
+          text: "Theo Mác, giai cấp xuất hiện khi nào?",
+          options: [
+            "Khi xuất hiện chế độ tư hữu và phân hóa giàu nghèo sâu sắc",
+            "Khi xã hội có sự phân chia lao động trí óc và lao động chân tay",
+            "Khi có sự khác biệt về phong tục, tập quán",
+            "Khi con người hình thành cộng đồng xã hội",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Tiêu chí cơ bản để phân biệt giai cấp theo quan điểm của Mác – Lênin là gì?",
+          options: [
+            "Thu nhập và địa vị xã hội",
+            "Thái độ chính trị và ý thức dân tộc",
+            "Quan hệ đối với tư liệu sản xuất",
+            "Sự khác nhau về nghề nghiệp",
+          ],
+          correct: 2,
+        },
+        {
+          text: "“Giai cấp là những tập đoàn người khác nhau về nghề nghiệp”. Nhận định trên đúng hay sai?",
+          options: ["Đúng", "Sai"],
+          correct: 1,
+        },
+        {
+          text: "Theo Lênin, trong thời kỳ đế quốc chủ nghĩa, vấn đề dân tộc gắn bó chặt chẽ nhất với vấn đề nào?",
+          options: [
+            "Vấn đề phát triển công nghệ",
+            "Vấn đề giải phóng dân tộc thuộc địa",
+            "Vấn đề cải cách giáo dục",
+            "Vấn đề dân số toàn cầu",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Hãy điền từ thích hợp vào chỗ trống: “... là hình thức cộng đồng người phát triển từ thị tộc và do sự liên kết của nhiều thị tộc có cùng huyết thống tạo thành.”?",
+          options: ["Thị tộc", "Bộ lạc", "Bộ tộc", "Dân tộc"],
+          correct: 1,
+        },
+        {
+          text: "Vấn đề giai cấp và vấn đề dân tộc có mối quan hệ như thế nào?",
+          options: [
+            "Hoàn toàn tách rời, độc lập nhau",
+            "Vấn đề giai cấp bao giờ cũng quan trọng hơn vấn đề dân tộc",
+            "Vấn đề dân tộc bao giờ cũng quan trọng hơn vấn đề giai cấp",
+            "Vấn đề giai cấp và dân tộc có quan hệ mật thiết, tác động qua lại",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Theo quan điểm của V. I. Lênin, đấu tranh giai cấp hiểu theo nghĩa chung nhất là?",
+          options: [
+            "Cuộc đấu tranh nông dân chống bọn địa chủ phong kiến có đặc quyền đặc lợi, bọn áp bức và bọn ăn bám",
+            "Cuộc đấu tranh của những người công nhân làm thuê hay những người vô sản, chống giai cấp tư sản",
+            "Là sự đấu tranh giữa giai cấp bị áp bức bóc lột với giai cấp áp bức bóc lột",
+            "Là sự đấu tranh giữa giai cấp nô lệ với giai cấp chủ nô",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Theo Lênin, dân tộc là một cộng đồng người ổn định, hình thành trong lịch sử với những đặc trưng cơ bản dựa trên sự thống nhất về các yếu tố nào?",
+          options: [
+            "Tôn giáo, huyết thống, chính trị",
+            "Giới tính, nghề nghiệp, sở thích",
+            "Lãnh thổ, kinh tế, ngôn ngữ, văn hóa",
+            "Sở hữu, quyền lực, ý chí",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Theo quan điểm của V. I. Lênin, đấu tranh giai cấp hiểu theo nghĩa chung nhất là?",
+          options: [
+            "Cuộc đấu tranh nông dân chống bọn địa chủ phong kiến có đặc quyền đặc lợi, bọn áp bức và bọn ăn bám",
+            "Là sự đấu tranh giữa giai cấp bị áp bức bóc lột với giai cấp áp bức bóc lột",
+            "Cuộc đấu tranh của những người công nhân làm thuê hay những người vô sản, chống giai cấp tư sản",
+            "Là sự đấu tranh giữa giai cấp nô lệ với giai cấp chủ nô",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Nhận định sau đúng hay sai: “Phân chia giai cấp là hiện tượng gắn với mọi hình thái kinh tế - xã hội”?",
+          options: ["Sai", "Đúng"],
+          correct: 0,
+        },
+      ];
+      const originalQuestions7 = [
+        {
+          text: "Nhận định sau đúng hay sai: “Nhà nước chỉ tồn tại trong xã hội có phân chia giai cấp”",
+          options: ["Đúng", "Sai"],
+          correct: 0,
+        },
+        {
+          text: "Nguồn gốc trực tiếp cho sự ra đời của nhà nước là gì?",
+          options: [
+            "Do kinh tế phát triển",
+            "Do mâu thuẫn giai cấp không thể điều hòa",
+            "Do nhu cầu tạo ra sự đoàn kết nhất trí của toàn dân tộc",
+            "Do nhu cầu quản lý xã hội",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Bản chất của nhà nước theo chủ nghĩa Mác – Lênin là gì?",
+          options: [
+            "Công cụ bảo vệ lợi ích chung của toàn xã hội",
+            "Tổ chức quyền lực công cộng đặc biệt của giai cấp thống trị",
+            "Thiết chế quản lý hành chính – pháp luật trung lập",
+            "Biểu hiện của ý chí thần linh",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Theo quan điểm Mác – Lênin, cách mạng xã hội là gì?",
+          options: [
+            "Cuộc đấu tranh giai cấp dẫn đến việc thay thế hình thái kinh tế – xã hội cũ bằng hình thái kinh tế – xã hội mới cao hơn",
+            "Quá trình phát triển tự nhiên của xã hội",
+            "Sự cải cách chính trị – hành chính trong xã hội",
+            "Quá trình tiến hóa về văn hóa và đạo đức",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Trong xã hội xã hội chủ nghĩa, nhà nước mang bản chất gì?",
+          options: [
+            "Bản chất thần quyền",
+            "Bản chất phong kiến cầm quyền",
+            "Bản chất tư sản cầm quyền",
+            "Bản chất của nhân dân lao động",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Động lực trực tiếp của cách mạng xã hội là gì?",
+          options: [
+            "Sự thay đổi phong tục tập quán",
+            "Đấu tranh tư tưởng giữa các hệ tư tưởng",
+            "Đấu tranh giữa các giai cấp đối kháng",
+            "Cải tiến kỹ thuật",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Nguyên nhân sâu xa dẫn tới các cuộc cách mạng xã hội là gì?",
+          options: [
+            "Do chiến tranh xâm lược bên ngoài",
+            "Mâu thuẫn trong đời sống cá nhân",
+            "Mâu thuẫn dân tộc và tôn giáo",
+            "Mâu thuẫn giữa lực lượng sản xuất và quan hệ sản xuất",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Công cụ chủ yếu để nhà nước thực hiện quyền lực giai cấp là gì?",
+          options: [
+            "Văn hóa và tôn giáo",
+            "Pháp luật và bộ máy quân đội, cảnh sát, tòa án",
+            "Giáo dục và tuyên truyền",
+            "Tập quán xã hội",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Nhà nước có đặc trưng cơ bản nào?",
+          options: [
+            "Ra đời cùng với sự xuất hiện của loài người",
+            "Chỉ xuất hiện trong xã hội xã hội chủ nghĩa",
+            "Chỉ quản lý bằng đạo đức và phong tục",
+            "Có quyền lực công cộng đặc biệt, hệ thống pháp luật và lãnh thổ xác định",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Nguồn gốc trực tiếp cho sự ra đời của nhà nước là gì?",
+          options: [
+            "Do mâu thuẫn giai cấp không thể điều hòa",
+            "Do kinh tế phát triển",
+            "Do nhu cầu tạo ra sự đoàn kết nhất trí của toàn dân tộc",
+            "Do nhu cầu quản lý xã hội",
+          ],
+          correct: 0,
+        },
+      ];
+
+      const originalQuestions8 = [
+        {
+          text: "Khái niệm dùng để chỉ mặt vật chất, sinh hoạt vật chất và điều kiện sinh hoạt vật chất của một xã hội:",
+          options: [
+            "Tồn tại xã hội",
+            "Ý thức xã hội",
+            "Tinh thần xã hội",
+            "Tâm lý xã hội",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Hình thái ý thức xã hội nào phản ánh một cách khái quát, hệ thống về thế giới và vị trí của con người trong thế giới đó?",
+          options: [
+            "Ý thức chính trị",
+            "Ý thức tôn giáo",
+            "Ý thức pháp quyền",
+            "Ý thức triết học",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Ý thức xã hội thường lạc hậu so với tồn tại xã hội vì sao?",
+          options: [
+            "Do con người ít quan tâm đến đời sống tinh thần",
+            "Do thói quen, tập quán, truyền thống ăn sâu trong đời sống xã hội",
+            "Do khoa học chưa phát triển",
+            "Do tồn tại xã hội luôn bất biến",
+          ],
+          correct: 1,
+        },
+      ];
+
+      const originalQuestions34 = [
+        {
+          text: "Hãy điền vào chỗ trống cụm từ thích hợp: “Trong xã hội có giai cấp, …”?",
+          options: [
+            "Triết học cũng có tính giai cấp",
+            "Chỉ triết học phương Tây mới có tính giai cấp",
+            "Chỉ triết học phương Đông mới có tính giai cấp",
+            "Triết học không có tính giai cấp",
+          ],
+          correct: 0,
+        },
+        {
+          text: "Triết học ra đời vào khoảng thời gian nào?",
+          options: [
+            "Thế kỷ X-IX trước công nguyên",
+            "Thế kỷ III-I trước công nguyên",
+            "Thế kỷ VIII – VI trước công nguyên",
+            "Thế kỷ V sau công nguyên",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Nền triết học nào thời cổ đại được coi là cái nôi của triết học phương Tây?",
+          options: [
+            "Triết học Anh",
+            "Triết học Đức",
+            "Triết học Hy Lạp",
+            "Triết học Bắc Âu",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Nền triết học nào quan niệm triết học là sự yêu mến sự thông thái?",
+          options: [
+            "Triết học Ấn Độ cổ đại",
+            "Triết học Trung Quốc cổ đại",
+            "Triết học Hy Lạp cổ đại",
+            "Triết học Nga cổ đại",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Nền triết học nào quan niệm triết học là sự chiêm ngưỡng, chiêm nghiệm con đường đạt tới chân lý và lẽ phải?",
+          options: [
+            "Triết học Hy Lạp cổ đại",
+            "Triết học La Mã cổ đại",
+            "Triết học Trung Quốc cổ đại",
+            "Triết học Ấn Độ cổ đại",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Triết học thời kỳ nào coi đối tượng nghiên cứu của triết học là các giáo lí Kitô giáo?",
+          options: [
+            "Triết học Hy Lạp thời cổ đại",
+            "Triết học phương Tây thời trung cổ",
+            "Triết học phương Tây hiện đại",
+            "Triết học phương Tây thời Phục hưng",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Các điều kiện xác định nguồn gốc cho sự ra đời của Triết học bao gồm những gì?",
+          options: [
+            "Nguồn gốc nhận thức và nguồn gốc tự nhiên",
+            "Nguồn gốc tự nhiên và nguồn gốc xã hội",
+            "Nguồn gốc lịch sử và nguồn gốc xã hội",
+            "Nguồn gốc nhận thức và nguồn gốc xã hội",
+          ],
+          correct: 3,
+        },
+        {
+          text: "Triết học thời kỳ nào xác định đối tượng nghiên cứu của triết học bao trùm các lĩnh vực khoa học khác nhau?",
+          options: [
+            "Triết học phương Tây hiện đại",
+            "Triết học phương Đông trung cổ",
+            "Triết học Hy Lạp cổ đại",
+            "Triết học Ấn Độ cổ đại",
+          ],
+          correct: 2,
+        },
+        {
+          text: "Chức năng cơ bản của triết học là gì?",
+          options: [
+            "Chức năng tư tưởng và chức năng hành động",
+            "Chức năng thế giới quan và chức năng phương pháp luận chung nhất",
+            "Chức năng nhận thức và chức năng thực tiễn",
+            "Chức năng dự báo và chức năng nhận thức",
+          ],
+          correct: 1,
+        },
+        {
+          text: "Hình thức ý thức có tính lý luận xuất hiện sớm nhất trong lịch sử tư tưởng nhân loại là gì?",
+          options: ["Khoa học", "Tôn giáo", "Triết học", "Thần thoại"],
+          correct: 2,
+        },
+      ];
+
+      const originalQuestions = [
+        ...originalQuestions11,
+        ...originalQuestions20,
+        ...originalQuestions30,
+        ...originalQuestions40,
+        ...originalQuestions60,
+        ...originalQuestions70,
+        ...originalQuestions1,
+        ...originalQuestions2,
+        ...originalQuestions3,
+        ...originalQuestions4,
+        ...originalQuestions5,
+        ...originalQuestions6,
+        ...originalQuestions7,
+        ...originalQuestions8,
+        ...originalQuestions34,
+      ];
+      // State variables
+      let questions = [];
+      let wrongQuestions = []; // Store wrong questions for review
+      let currentMode = ""; // exam, quickReview, wrongReview, all
+      let isQuickReviewMode = false;
+      let answeredCount = 0;
+
+      // Initialize
+      document.getElementById(
+        "totalQuestionsCount"
+      ).textContent = `${originalQuestions.length} câu`;
+      lucide.createIcons();
+      updateWrongQuestionsButton();
+
+      // Shuffle functions
+      function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      }
+
+      function getRandomQuestions(count) {
+        const shuffled = shuffleArray(originalQuestions);
+        return shuffled.slice(0, count);
+      }
+
+      // Mode functions
+      function startExam() {
+        currentMode = "exam";
+        isQuickReviewMode = false;
+        questions = getRandomQuestions(40);
+        showQuiz(
+          "Chọn đề 40 câu",
+          "Random từ ngân hàng " + originalQuestions.length + " câu",
+          "from-indigo-500 to-purple-600",
+          "file-text"
+        );
+      }
+
+      function startQuickReview() {
+        currentMode = "quickReview";
+        isQuickReviewMode = true;
+        questions = getRandomQuestions(40);
+        showQuiz(
+          "Ôn nhanh",
+          "Xem đáp án đúng ngay lập tức",
+          "from-emerald-500 to-teal-600",
+          "zap"
+        );
+      }
+
+      function reviewWrongAnswers() {
+        if (wrongQuestions.length === 0) {
+          alert("Chưa có câu sai nào để ôn lại!");
+          return;
+        }
+        currentMode = "wrongReview";
+        isQuickReviewMode = false;
+        questions = shuffleArray([...wrongQuestions]);
+        showQuiz(
+          "Ôn lại câu sai",
+          `${wrongQuestions.length} câu cần ôn lại`,
+          "from-red-500 to-rose-600",
+          "refresh-cw"
+        );
+      }
+
+      function startAllQuestions() {
+        currentMode = "all";
+        isQuickReviewMode = false;
+        questions = shuffleArray([...originalQuestions]);
+        showQuiz(
+          "Tất cả câu hỏi",
+          `${originalQuestions.length} câu trong ngân hàng`,
+          "from-amber-500 to-orange-600",
+          "book-open"
+        );
+      }
+
+      function showQuiz(name, description, gradient, icon) {
+        // Hide mode panel
+        document.getElementById("modePanel").classList.add("hidden");
+
+        // Show current mode indicator
+        const indicator = document.getElementById("currentModeIndicator");
+        indicator.classList.remove("hidden");
+        document.getElementById("modeName").textContent = name;
+        document.getElementById("modeDescription").textContent = description;
+        document.getElementById(
+          "modeIcon"
+        ).className = `w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${gradient}`;
+        document.getElementById(
+          "modeIcon"
+        ).innerHTML = `<i data-lucide="${icon}" class="w-5 h-5 text-white"></i>`;
+
+        // Show progress and buttons
+        document.getElementById("progressContainer").classList.remove("hidden");
+        document.getElementById("buttonGroup").classList.remove("hidden");
+
+        // Update progress text
+        document.getElementById(
+          "progressText"
+        ).textContent = `0/${questions.length} câu đã trả lời`;
+
+        // Render questions
+        renderQuestions();
+
+        // Reinitialize icons
+        lucide.createIcons();
+      }
+
+      function backToMenu() {
+        // Hide quiz elements
+        document.getElementById("currentModeIndicator").classList.add("hidden");
+        document.getElementById("progressContainer").classList.add("hidden");
+        document.getElementById("buttonGroup").classList.add("hidden");
+        document.getElementById("resultCard").classList.add("hidden");
+        document.getElementById("retryContainer").classList.add("hidden");
+        document.getElementById("statsFooter").classList.add("hidden");
+
+        // Clear form
+        document.getElementById("quizForm").innerHTML = "";
+
+        // Show mode panel
+        document.getElementById("modePanel").classList.remove("hidden");
+
+        // Update wrong questions button
+        updateWrongQuestionsButton();
+
+        // Reset progress
+        document.getElementById("progressBar").style.width = "0%";
+        answeredCount = 0;
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // Reinitialize icons
+        lucide.createIcons();
+      }
+
+      function updateWrongQuestionsButton() {
+        const btn = document.getElementById("reviewWrongBtn");
+        const badge = document.getElementById("wrongCountBadge");
+
+        if (wrongQuestions.length > 0) {
+          btn.disabled = false;
+          badge.textContent = `${wrongQuestions.length} câu cần ôn`;
+          badge.classList.remove("text-slate-400");
+          badge.classList.add("text-red-400");
+        } else {
+          btn.disabled = true;
+          badge.textContent = "Chưa có câu sai";
+          badge.classList.add("text-slate-400");
+          badge.classList.remove("text-red-400");
+        }
+      }
+
+      function renderQuestions() {
+        const form = document.getElementById("quizForm");
+        form.innerHTML = "";
+        form.className = isQuickReviewMode
+          ? "space-y-6 quick-review"
+          : "space-y-6";
+
+        const fragment = document.createDocumentFragment();
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                gsap.to(entry.target, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.4,
+                  ease: "power2.out",
+                });
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+
+        questions.forEach((q, index) => {
+          const shuffledOptions = shuffleArray(
+            q.options.map((opt, i) => ({ text: opt, index: i }))
+          );
+          q.shuffled = shuffledOptions;
+
+          const div = document.createElement("div");
+          div.className =
+            "question-card glass-card p-6 rounded-3xl opacity-0 translate-y-8 will-change-transform will-change-opacity";
+          div.id = `question-${index}`;
+
+          div.innerHTML = `
+            <div class="flex items-start gap-4 mb-6">
+              <span class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                ${index + 1}
+              </span>
+              <h3 class="text-xl font-bold text-white pt-2">${q.text}</h3>
+            </div>
+            <div class="space-y-3 pl-16">
+              ${shuffledOptions
+                .map(
+                  (opt, optIndex) => `
+                <label class="option-label block cursor-pointer ${
+                  isQuickReviewMode && opt.index === q.correct
+                    ? "correct-answer"
+                    : ""
+                }" data-index="${opt.index}">
+                  <input type="radio" name="q${index}" value="${
+                    opt.index
+                  }" class="hidden peer" onchange="updateProgress()">
+                  <div class="option-content flex items-center gap-4 p-4 bg-slate-800/50 border-2 border-slate-600/30 rounded-2xl hover:border-purple-500/50 hover:bg-slate-700/50 transition-colors duration-200">
+                    <span class="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-300 border border-slate-600/50">
+                      ${String.fromCharCode(65 + optIndex)}
+                    </span>
+                    <span class="text-slate-200 font-medium">${opt.text}</span>
+                    ${
+                      isQuickReviewMode && opt.index === q.correct
+                        ? '<span class="ml-auto"><i data-lucide="check" class="w-6 h-6 text-white"></i></span>'
+                        : '<span class="ml-auto opacity-0 peer-checked:opacity-100 transition-opacity"><i data-lucide="check-circle-2" class="w-6 h-6 text-purple-400"></i></span>'
+                    }
+                  </div>
+                </label>
+              `
+                )
+                .join("")}
+            </div>
+          `;
+
+          fragment.appendChild(div);
+          observer.observe(div);
+        });
+
+        form.appendChild(fragment);
+        requestAnimationFrame(() => lucide.createIcons());
+      }
+
+      function updateProgress() {
+        answeredCount = questions.filter((_, i) =>
+          document.querySelector(`input[name="q${i}"]:checked`)
+        ).length;
+        const percent = (answeredCount / questions.length) * 100;
+
+        gsap.to("#progressBar", {
+          width: percent + "%",
+          duration: 0.5,
+          ease: "power2.out",
+        });
+
+        document.getElementById(
+          "progressText"
+        ).textContent = `${answeredCount}/${questions.length} câu đã trả lời`;
+      }
+
+      function createConfetti() {
+        const colors = [
+          "#6366f1",
+          "#8b5cf6",
+          "#a855f7",
+          "#10b981",
+          "#fbbf24",
+          "#ec4899",
+          "#06b6d4",
+        ];
+        const shapes = ["circle", "square", "triangle"];
+
+        for (let i = 0; i < 80; i++) {
+          const confetti = document.createElement("div");
+          confetti.className = "confetti";
+          confetti.style.left = Math.random() * 100 + "vw";
+          confetti.style.top = "-20px";
+          confetti.style.width = Math.random() * 10 + 5 + "px";
+          confetti.style.height = confetti.style.width;
+          confetti.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+
+          const shape = shapes[Math.floor(Math.random() * shapes.length)];
+          if (shape === "circle") {
+            confetti.style.borderRadius = "50%";
+          } else if (shape === "triangle") {
+            confetti.style.width = "0";
+            confetti.style.height = "0";
+            confetti.style.backgroundColor = "transparent";
+            confetti.style.borderLeft = "6px solid transparent";
+            confetti.style.borderRight = "6px solid transparent";
+            confetti.style.borderBottom = `12px solid ${
+              colors[Math.floor(Math.random() * colors.length)]
+            }`;
+          }
+
+          document.body.appendChild(confetti);
+
+          gsap.to(confetti, {
+            y: window.innerHeight + 50,
+            x: (Math.random() - 0.5) * 200,
+            rotation: Math.random() * 720,
+            opacity: 0,
+            duration: 2 + Math.random() * 2,
+            ease: "power1.out",
+            onComplete: () => confetti.remove(),
+          });
+        }
+      }
+
+      function animateScore(target, element) {
+        let current = 0;
+        const duration = 1000;
+        const step = target / (duration / 16);
+
+        const animate = () => {
+          current += step;
+          if (current >= target) {
+            element.textContent = target + "%";
+            return;
+          }
+          element.textContent = Math.floor(current) + "%";
+          requestAnimationFrame(animate);
+        };
+        animate();
+      }
+
+      function submitQuiz() {
+        let score = 0;
+        const questionDivs = document.querySelectorAll(".question-card");
+        const submitBtn = document.getElementById("submitBtn");
+        const newWrongQuestions = [];
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+          <span class="relative z-10 flex items-center gap-3">
+            <svg class="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span>Đang chấm điểm...</span>
+          </span>
+        `;
+
+        setTimeout(() => {
+          questions.forEach((q, index) => {
+            const selected = document.querySelector(
+              `input[name="q${index}"]:checked`
+            );
+            const div = questionDivs[index];
+            const labels = div.querySelectorAll(".option-label");
+
+            labels.forEach((label) => {
+              const optIndex = parseInt(label.dataset.index);
+              if (optIndex === q.correct) {
+                label.classList.add("correct-answer");
+                const iconSpan = label.querySelector(
+                  ".option-content span:last-child"
+                );
+                iconSpan.innerHTML =
+                  '<i data-lucide="check" class="w-6 h-6 text-white"></i>';
+                iconSpan.classList.remove("opacity-0");
+              } else if (selected && parseInt(selected.value) === optIndex) {
+                label.classList.add("wrong-answer");
+                const iconSpan = label.querySelector(
+                  ".option-content span:last-child"
+                );
+                iconSpan.innerHTML =
+                  '<i data-lucide="x" class="w-6 h-6 text-white"></i>';
+                iconSpan.classList.remove("opacity-0");
+              }
+            });
+
+            if (selected && parseInt(selected.value) === q.correct) {
+              score++;
+              gsap.to(div, {
+                scale: 1.02,
+                duration: 0.3,
+                ease: "back.out(1.7)",
+                onComplete: () => gsap.to(div, { scale: 1, duration: 0.2 }),
+              });
+              div.style.borderColor = "rgba(16, 185, 129, 0.5)";
+              div.style.boxShadow = "0 0 30px rgba(16, 185, 129, 0.2)";
+            } else {
+              div.classList.add("animate-shake");
+              div.style.borderColor = "rgba(239, 68, 68, 0.5)";
+              div.style.boxShadow = "0 0 30px rgba(239, 68, 68, 0.2)";
+
+              // Add to wrong questions (avoid duplicates)
+              const originalQuestion = {
+                text: q.text,
+                options: q.options,
+                correct: q.correct,
+              };
+
+              // Check if not already in wrongQuestions
+              const exists = wrongQuestions.some((wq) => wq.text === q.text);
+              if (!exists) {
+                newWrongQuestions.push(originalQuestion);
+              }
+            }
+          });
+
+          // Add new wrong questions to the list
+          wrongQuestions = [...wrongQuestions, ...newWrongQuestions];
+
+          // If reviewing wrong questions and answered correctly, remove from list
+          if (currentMode === "wrongReview") {
+            questions.forEach((q, index) => {
+              const selected = document.querySelector(
+                `input[name="q${index}"]:checked`
+              );
+              if (selected && parseInt(selected.value) === q.correct) {
+                wrongQuestions = wrongQuestions.filter(
+                  (wq) => wq.text !== q.text
+                );
+              }
+            });
+          }
+
+          lucide.createIcons();
+
+          // Show result
+          const resultCard = document.getElementById("resultCard");
+          const resultIcon = document.getElementById("resultIcon");
+          const resultTitle = document.getElementById("resultTitle");
+          const resultText = document.getElementById("resultText");
+          const scoreValue = document.getElementById("scoreValue");
+          const scoreBarFill = document.getElementById("scoreBarFill");
+
+          const percentage = Math.round((score / questions.length) * 100);
+
+          if (percentage >= 80) {
+            resultIcon.innerHTML =
+              '<i data-lucide="party-popper" class="w-12 h-12 text-yellow-400"></i>';
+            resultIcon.className =
+              "inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-gradient-to-br from-yellow-400/30 to-amber-500/30 animate-bounce-in";
+            resultTitle.textContent = "Xuất sắc!";
+            resultText.textContent =
+              "Bạn đã nắm vững kiến thức rồi! Tiếp tục phát huy nhé!";
+            scoreBarFill.className =
+              "h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-yellow-400 to-amber-500";
+            createConfetti();
+          } else if (percentage >= 50) {
+            resultIcon.innerHTML =
+              '<i data-lucide="thumbs-up" class="w-12 h-12 text-blue-400"></i>';
+            resultIcon.className =
+              "inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-gradient-to-br from-blue-400/30 to-cyan-500/30 animate-bounce-in";
+            resultTitle.textContent = "Khá tốt!";
+            resultText.textContent =
+              "Cố gắng thêm một chút nữa, bạn sẽ làm tốt hơn!";
+            scoreBarFill.className =
+              "h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-blue-400 to-cyan-500";
+          } else {
+            resultIcon.innerHTML =
+              '<i data-lucide="book-open" class="w-12 h-12 text-purple-400"></i>';
+            resultIcon.className =
+              "inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-gradient-to-br from-purple-400/30 to-pink-500/30 animate-bounce-in";
+            resultTitle.textContent = "Cần ôn tập thêm!";
+            resultText.textContent =
+              "Đừng nản chí, hãy xem lại bài và thử lại nhé!";
+            scoreBarFill.className =
+              "h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-purple-400 to-pink-500";
+          }
+
+          scoreValue.textContent = `${score}/${questions.length} câu đúng`;
+
+          setTimeout(() => {
+            scoreBarFill.style.width = percentage + "%";
+          }, 300);
+
+          document.getElementById("correctCount").textContent = score;
+          document.getElementById("wrongCount").textContent =
+            questions.length - score;
+          animateScore(percentage, document.getElementById("percentScore"));
+
+          resultCard.classList.remove("hidden");
+          document.getElementById("retryContainer").classList.remove("hidden");
+          document.getElementById("statsFooter").classList.remove("hidden");
+          submitBtn.classList.add("hidden");
+
+          gsap.from(resultCard, {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.6,
+            ease: "back.out(1.7)",
+          });
+
+          lucide.createIcons();
+          resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 1200);
+      }
+
+      function restartQuiz() {
+        if (currentMode === "exam") {
+          questions = getRandomQuestions(40);
+        } else if (currentMode === "quickReview") {
+          questions = getRandomQuestions(40);
+        } else if (currentMode === "wrongReview") {
+          questions = shuffleArray([...wrongQuestions]);
+        } else {
+          questions = shuffleArray([...originalQuestions]);
+        }
+        resetQuizUI();
+      }
+
+      function restartQuizSameOrder() {
+        resetQuizUI();
+      }
+
+      function resetQuizUI() {
+        document.getElementById("progressBar").style.width = "0%";
+        document.getElementById(
+          "progressText"
+        ).textContent = `0/${questions.length} câu đã trả lời`;
+        answeredCount = 0;
+
+        document.getElementById("resultCard").classList.add("hidden");
+        document.getElementById("retryContainer").classList.add("hidden");
+        document.getElementById("statsFooter").classList.add("hidden");
+
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.classList.remove("hidden");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <span class="relative z-10 flex items-center gap-3">
+            <i data-lucide="send" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+            <span>Nộp bài</span>
+          </span>
+          <div class="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        `;
+
+        renderQuestions();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    </script>
+  </body>
+</html>
